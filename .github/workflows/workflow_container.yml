@@ -5,7 +5,6 @@ on:
     - cron: "30 8,11 * * *" #Runs at 8:30 and 11:30 UTC everyday
 
 jobs:
-
   # define matrix for all executions
   # ------------------------
   DefineMatrix:
@@ -28,11 +27,6 @@ jobs:
 
   # deploy a container for the job
   wasabi:
-    container:
-      image:  ${{ vars.CONTAINER_IMAGE }}
-      credentials:
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.ghcr_password }}
     name: Run container
     runs-on: ubuntu-latest
     continue-on-error: true
@@ -57,6 +51,13 @@ jobs:
         unset the_user
         unset the_pass
 
+    #- name: Login to GitHub Container Registry
+    #  uses: docker/login-action@v2
+    #  with:
+    #    registry: ghcr.io
+    #    username: ${{ github.actor }}
+    #    password: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Run the Docker container
       run: |
         docker run \
@@ -68,4 +69,4 @@ jobs:
           -e TELEGRAM_USERID=${{ secrets.TELEGRAM_USERID }} \
           -e USER=${{ steps.sets-secrets.outputs.secret-user }} \
           -e PASS=${{ steps.sets-secrets.outputs.secret-pass }} \
-        ${{ vars.CONTAINER_IMAGE }}
+        ${{ secrets.CONTAINER_IMAGE }}

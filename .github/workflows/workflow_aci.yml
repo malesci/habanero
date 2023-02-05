@@ -71,8 +71,10 @@ jobs:
           --resource-group rg-${{ steps.sets-secrets.outputs.location }} \
           --name ${{ env.ACI_PREFIX }}-${{ github.run_id }}-${{ matrix.account.the_id }} \
           --cpu 1 --memory 1 \
-          --image ${{ vars.CONTAINER_IMAGE }} \
-          #--image-password?
+          --image ${{ secrets.CONTAINER_IMAGE }} \
+          --registry-login-server ghcr.io \
+          --registry-username ${{ github.actor }} \
+          --registry-password ${{ secrets.GITHUB_TOKEN }} \
           --restart-policy Never \
           --environment-variables \
             GOOGLE_SHEETS_CREDENTIALS_B64=${{ secrets.GOOGLE_SHEETS_CREDENTIALS_B64 }} \
