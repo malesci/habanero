@@ -77,6 +77,7 @@ jobs:
           --registry-password ${{ secrets.GITHUB_TOKEN }} \
           --restart-policy Never \
           --environment-variables \
+            GPG_PASSPHRASE=${{ secrets.GPG_PASSPHRASE }} \
             GOOGLE_SHEETS_CREDENTIALS_B64=${{ secrets.GOOGLE_SHEETS_CREDENTIALS_B64 }} \
             GOOGLE_SHEETS_TOKEN_B64=${{ secrets.GOOGLE_SHEETS_TOKEN_B64 }} \
             GOOGLE_SHEETS_SHEET_ID=${{ secrets.GOOGLE_SHEETS_SHEET_ID }} \

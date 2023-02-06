@@ -61,6 +61,7 @@ jobs:
     - name: Run the Docker container
       run: |
         docker run \
+          -e GPG_PASSPHRASE=${{ secrets.GPG_PASSPHRASE }} \
           -e GOOGLE_SHEETS_CREDENTIALS_B64=${{ secrets.GOOGLE_SHEETS_CREDENTIALS_B64 }} \
           -e GOOGLE_SHEETS_TOKEN_B64=${{ secrets.GOOGLE_SHEETS_TOKEN_B64 }} \
           -e GOOGLE_SHEETS_SHEET_ID=${{ secrets.GOOGLE_SHEETS_SHEET_ID }} \
