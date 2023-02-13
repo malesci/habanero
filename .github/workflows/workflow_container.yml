@@ -15,7 +15,6 @@ jobs:
     outputs:
       accounts: ${{ steps.get-accounts.outputs.IDs }}
     steps:
-
       - name: Get Accounts
         id: get-accounts
         env:
@@ -31,8 +30,6 @@ jobs:
           else
             array=($(echo "$accounts_ondemand" | tr ',' '\n'))
             echo "array=$(echo ${array[@]})" >> $GITHUB_OUTPUT
-            #echo "::set-output name=array::$(echo ${array[@]})"
-
             json="["
             for i in ${!array[@]}; do
               json=$json"{\"the_id\":\""${array[i]}"\"},"
@@ -42,7 +39,6 @@ jobs:
             echo 'IDs<<EOF' >> $GITHUB_OUTPUT
             echo $json >> $GITHUB_OUTPUT
             echo 'EOF' >> $GITHUB_OUTPUT
-            #echo "::set-output name=IDs::$json"
           fi
   # ------------------------
 
