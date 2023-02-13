@@ -1,6 +1,9 @@
 name: habanero container
 on:
   workflow_dispatch:
+    inputs:
+      accounts_ondemand:
+        description: 'Enter the accounts, separated by commas'
   schedule:
     - cron: "30 8,11 * * *" #Runs at 8:30 and 11:30 UTC everyday
 
@@ -12,17 +15,35 @@ jobs:
     outputs:
       accounts: ${{ steps.get-accounts.outputs.IDs }}
     steps:
-      - name: Checkout repo content
-        uses: actions/checkout@v3 # checkout the repository content to github runner.
+
       - name: Get Accounts
         id: get-accounts
+        env:
+          accounts_ondemand: ${{ inputs.accounts_ondemand }}
         run: |
-          echo $(echo ${{ secrets.MATRIX }} | base64 --decode) > originalData.json
-          echo 'IDs<<EOF' >> $GITHUB_OUTPUT
-          jq "[.[] | { the_id: .id }]" originalData.json >> $GITHUB_OUTPUT
-          echo 'EOF' >> $GITHUB_OUTPUT
+          if [ -z "$accounts_ondemand" ]; then
+            echo "The accounts input is empty."
+            echo $(echo ${{ secrets.MATRIX }} | base64 --decode) > originalData.json
+            echo 'IDs<<EOF' >> $GITHUB_OUTPUT
+            jq "[.[] | { the_id: .id }]" originalData.json >> $GITHUB_OUTPUT
+            echo 'EOF' >> $GITHUB_OUTPUT
+            rm -f originalData.json
+          else
+            array=($(echo "$accounts_ondemand" | tr ',' '\n'))
+            echo "array=$(echo ${array[@]})" >> $GITHUB_OUTPUT
+            #echo "::set-output name=array::$(echo ${array[@]})"
 
-          rm -f originalData.json
+            json="["
+            for i in ${!array[@]}; do
+              json=$json"{\"the_id\":\""${array[i]}"\"},"
+            done
+            json=${json%,}
+            json=$json"]"
+            echo 'IDs<<EOF' >> $GITHUB_OUTPUT
+            echo $json >> $GITHUB_OUTPUT
+            echo 'EOF' >> $GITHUB_OUTPUT
+            #echo "::set-output name=IDs::$json"
+          fi
   # ------------------------
 
   # deploy a container for the job
