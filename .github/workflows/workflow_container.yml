@@ -15,31 +15,31 @@ jobs:
     outputs:
       accounts: ${{ steps.get-accounts.outputs.IDs }}
     steps:
-      - name: Get Accounts
-        id: get-accounts
-        env:
-          accounts_ondemand: ${{ inputs.accounts_ondemand }}
-        run: |
-          if [ -z "$accounts_ondemand" ]; then
-            echo "The accounts input is empty."
-            echo $(echo ${{ secrets.MATRIX }} | base64 --decode) > originalData.json
-            echo 'IDs<<EOF' >> $GITHUB_OUTPUT
-            jq "[.[] | { the_id: .id }]" originalData.json >> $GITHUB_OUTPUT
-            echo 'EOF' >> $GITHUB_OUTPUT
-            rm -f originalData.json
-          else
-            array=($(echo "$accounts_ondemand" | tr ',' '\n'))
-            echo "array=$(echo ${array[@]})" >> $GITHUB_OUTPUT
-            json="["
-            for i in ${!array[@]}; do
-              json=$json"{\"the_id\":\""${array[i]}"\"},"
-            done
-            json=${json%,}
-            json=$json"]"
-            echo 'IDs<<EOF' >> $GITHUB_OUTPUT
-            echo $json >> $GITHUB_OUTPUT
-            echo 'EOF' >> $GITHUB_OUTPUT
-          fi
+    - name: Get Accounts
+      id: get-accounts
+      env:
+        accounts_ondemand: ${{ inputs.accounts_ondemand }}
+      run: |
+        if [ -z "$accounts_ondemand" ]; then
+          echo "The accounts input is empty."
+          echo $(echo ${{ secrets.MATRIX }} | base64 --decode) > originalData.json
+          echo 'IDs<<EOF' >> $GITHUB_OUTPUT
+          jq "[.[] | { the_id: .id }]" originalData.json >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+          rm -f originalData.json
+        else
+          array=($(echo "$accounts_ondemand" | tr ',' '\n'))
+          echo "array=$(echo ${array[@]})" >> $GITHUB_OUTPUT
+          json="["
+          for i in ${!array[@]}; do
+            json=$json"{\"the_id\":\""${array[i]}"\"},"
+          done
+          json=${json%,}
+          json=$json"]"
+          echo 'IDs<<EOF' >> $GITHUB_OUTPUT
+          echo $json >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+        fi
   # ------------------------
 
   # deploy a container for the job
@@ -53,6 +53,16 @@ jobs:
       matrix:
         account: ${{ fromJSON(needs.DefineMatrix.outputs.accounts) }}
     steps:
+    - name: Get IP information
+      run: |
+        IP=$(curl -s https://api.ipify.org)
+        echo "The current IP is: $IP"
+
+    - name: Get Internet Provider information
+      run: |
+        provider_info=$(http https://ipapi.co/$IP/json/)
+        echo "The Internet Provider information is: $provider_info"
+
     - name: Set Secrets
       id: sets-secrets
       run: |
