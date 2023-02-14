@@ -64,7 +64,7 @@ jobs:
 
     - name: Get Internet Provider information
       run: |
-        provider_info=$(http https://ipapi.co/$IP/json/)
+        provider_info=$(curl https://ipapi.co/$IP/json/)
         echo "The Internet Provider information is: $provider_info"
 
     - name: Set Secrets
