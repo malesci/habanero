@@ -53,15 +53,15 @@ jobs:
       matrix:
         account: ${{ fromJSON(needs.DefineMatrix.outputs.accounts) }}
     steps:
-    - name: Get IP information
-      run: |
-        IP=$(curl -s https://api.ipify.org)
-        echo "The current IP is: $IP"
+    #- name: Get IP information
+    #  run: |
+    #    IP=$(curl -s https://api.ipify.org)
+    #    echo "The current IP is: $IP"
 
-    - name: Get Internet Provider information
-      run: |
-        provider_info=$(curl https://ipapi.co/$IP/json/)
-        echo "The Internet Provider information is: $provider_info"
+    #- name: Get Internet Provider information
+    #  run: |
+    #    provider_info=$(curl https://ipapi.co/$IP/json/)
+    #    echo "The Internet Provider information is: $provider_info"
 
     - name: Set Secrets
       id: sets-secrets
